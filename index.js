@@ -15,8 +15,8 @@ const ctx = canvas.getContext("2d");
 
 let state = {
     cards: [
-        { title: "card 1", x: 0, y: 0, color: COLORS.CARD_DEFAULT, selected: false, column: 0, position: 0 }, // First card in "To Do"
-        { title: "card 2", x: 0, y: 0, color: COLORS.CARD_DEFAULT, selected: false, column: 1, position: 0 }, // First card in "In Progress"
+        { title: "card 1", color: COLORS.CARD_DEFAULT, selected: false, column: 0, position: 0 }, // First card in "To Do"
+        { title: "card 2", color: COLORS.CARD_DEFAULT, selected: false, column: 1, position: 0 }, // First card in "In Progress"
     ],
     dzs: [
         { name: "To Do", over: false },
