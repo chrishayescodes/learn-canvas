@@ -1,18 +1,26 @@
 import { isPointInsideRectangle } from "./utils.js";
 
+const COLORS = {
+    CARD_DEFAULT: "green",
+    CARD_SELECTED_BORDER: "blue",
+    DROPZONE_DEFAULT: "silver",
+    DROPZONE_HOVER: "red",
+    BACKGROUND: "white",
+};
+
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
 let state = {
     cards: [
-        { x: 20, y: 20, height: 20, width: 20, color: "green", selected: false },
+        { x: 20, y: 20, height: 20, width: 20, color: COLORS.CARD_DEFAULT, selected: false },
     ],
     dzs: [{ x: 100, y: 20, width: 100, height: 100, over: false }],
 };
 
 function drawDropZones() {
     for (const dz of state.dzs) {
-        ctx.fillStyle = dz.over ? "red" : "silver";
+        ctx.fillStyle = dz.over ? COLORS.DROPZONE_HOVER : COLORS.DROPZONE_DEFAULT;
         ctx.fillRect(dz.x, dz.y, dz.width, dz.height);
     }
 }
@@ -20,12 +28,12 @@ function drawDropZones() {
 function drawCards() {
     for (const card of state.cards) {
         // Draw card
-        ctx.fillStyle = card.color;
+        ctx.fillStyle = card.color || COLORS.CARD_DEFAULT;
         ctx.fillRect(card.x, card.y, card.width, card.height);
 
         // Add border if selected
         if (card.selected) {
-            ctx.strokeStyle = "blue";
+            ctx.strokeStyle = COLORS.CARD_SELECTED_BORDER;
             ctx.lineWidth = 2;
             ctx.strokeRect(card.x, card.y, card.width, card.height);
         }
@@ -33,10 +41,8 @@ function drawCards() {
 }
 
 function draw() {
-    const statejson = document.getElementById("state");
-    statejson.innerText = JSON.stringify(state, null, 2);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "white";
+    ctx.fillStyle = COLORS.BACKGROUND;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawDropZones();
