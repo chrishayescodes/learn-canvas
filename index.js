@@ -25,8 +25,16 @@ function drawDropZones() {
 
 function drawCards() {
     for (const card of state.cards) {
-        ctx.fillStyle = card.selected ? "blue" : card.color;
+        // Draw card
+        ctx.fillStyle = card.color;
         ctx.fillRect(card.x, card.y, card.width, card.height);
+
+        // Add border if selected
+        if (card.selected) {
+            ctx.strokeStyle = "blue";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(card.x, card.y, card.width, card.height);
+        }
     }
 }
 
