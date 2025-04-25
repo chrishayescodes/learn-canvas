@@ -79,12 +79,25 @@ canvas.addEventListener("mousedown", function (event) {
 
 canvas.addEventListener("mouseup", function (event) {
     isdown = false;
+
     for (const card of state.cards) {
+        if (card.selected) {
+            // Check if the card is inside any drop zone
+            for (const dz of state.dzs) {
+                if (isPointInsideRectangle({ x: card.x + card.width / 2, y: card.y + card.height / 2 }, dz)) {
+                    // Snap the card to the center of the drop zone
+                    card.x = dz.x + (dz.width - card.width) / 2;
+                    card.y = dz.y + (dz.height - card.height) / 2;
+                }
+            }
+        }
         card.selected = false;
     }
+
     for (const dz of state.dzs) {
         dz.over = false;
     }
+
     draw();
 });
 
