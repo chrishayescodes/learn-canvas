@@ -1,3 +1,5 @@
+import { isPointInsideRectangle } from "./utils.js";
+
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
@@ -7,14 +9,6 @@ let state = {
     ],
     dzs: [{ x: 100, y: 20, width: 100, height: 100, over: false }],
 };
-
-function isPointInsideRectangle(point, rect) {
-    const { x, y } = point;
-    const { x: rectX, y: rectY, width, height } = rect;
-
-    return x >= rectX && x <= rectX + width &&
-        y >= rectY && y <= rectY + height;
-}
 
 function drawDropZones() {
     for (const dz of state.dzs) {
