@@ -97,8 +97,9 @@ canvas.addEventListener("mousemove", function (event) {
         // Move selected card
         for (const card of state.cards) {
             if (card.selected) {
-                card.x = Math.floor(mousePos.x - card.width / 2);
-                card.y = Math.floor(mousePos.y - card.height / 2);
+                // Clamp card position within canvas boundaries
+                card.x = Math.max(0, Math.min(canvas.width - card.width, Math.floor(mousePos.x - card.width / 2)));
+                card.y = Math.max(0, Math.min(canvas.height - card.height, Math.floor(mousePos.y - card.height / 2)));
                 needsRedraw = true;
                 break;
             }
