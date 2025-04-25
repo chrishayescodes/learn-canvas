@@ -13,7 +13,7 @@ const ctx = canvas.getContext("2d");
 
 let state = {
     cards: [
-        { x: 20, y: 20, height: 20, width: 20, color: COLORS.CARD_DEFAULT, selected: false },
+        { x: 20, y: 20, color: COLORS.CARD_DEFAULT, selected: false },
     ],
     dzs: [
         { name: "To Do", over: false },
