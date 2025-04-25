@@ -15,13 +15,39 @@ let state = {
     cards: [
         { x: 20, y: 20, height: 20, width: 20, color: COLORS.CARD_DEFAULT, selected: false },
     ],
-    dzs: [{ x: 100, y: 20, width: 100, height: 100, over: false }],
+    dzs: [
+        { name: "To Do", over: false },
+        { name: "In Progress", over: false },
+        { name: "Review", over: false },
+        { name: "Done", over: false },
+    ],
 };
+
+function positionDropZones(canvasWidth, canvasHeight) {
+    const dropZones = state.dzs;
+    const columnWidth = canvasWidth / dropZones.length; // Divide canvas width by the number of drop zones
+    const dropZoneHeight = canvasHeight - 20; // Leave some padding at the top and bottom
+
+    for (let i = 0; i < dropZones.length; i++) {
+        dropZones[i].x = i * columnWidth; // Position each drop zone in its column
+        dropZones[i].y = 10; // Fixed padding from the top
+        dropZones[i].width = columnWidth - 10; // Leave some padding between columns
+        dropZones[i].height = dropZoneHeight;
+    }
+}
+
+// Position drop zones initially
+positionDropZones(canvas.width, canvas.height);
 
 function drawDropZones() {
     for (const dz of state.dzs) {
         ctx.fillStyle = dz.over ? COLORS.DROPZONE_HOVER : COLORS.DROPZONE_DEFAULT;
         ctx.fillRect(dz.x, dz.y, dz.width, dz.height);
+
+        // Add text label for the drop zone
+        ctx.fillStyle = "black";
+        ctx.font = "16px Arial";
+        ctx.fillText(dz.name, dz.x + 10, dz.y + 20); // Position the text inside the drop zone
     }
 }
 
@@ -156,6 +182,10 @@ function resizeCanvas() {
     const container = document.getElementById("canvas-container");
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
+
+    // Recalculate drop zone positions
+    positionDropZones(canvas.width, canvas.height);
+
     draw(); // Redraw the canvas after resizing
 }
 
