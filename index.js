@@ -152,6 +152,19 @@ canvas.addEventListener("mousemove", function (event) {
     }
 });
 
+function resizeCanvas() {
+    const container = document.getElementById("canvas-container");
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+    draw(); // Redraw the canvas after resizing
+}
+
+// Set the initial size
+resizeCanvas();
+
+// Update the canvas size on window resize
+window.addEventListener("resize", resizeCanvas);
+
 function animationLoop() {
     if (needsRedraw) {
         draw();

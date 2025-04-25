@@ -7,6 +7,20 @@
     body{
         background-color: rgb(32, 32, 32);
         color: rgb(166, 166, 166);
+        margin: 0;
+        overflow: hidden; /* Prevent scrollbars */
+    }
+
+    #canvas-container {
+        width: 100%; /* Full width */
+        height: calc(100vh - 100px); /* Full height minus 100px for other content */
+        position: relative;
+    }
+
+    #board {
+        width: 100%;
+        height: 100%;
+        display: block; /* Remove inline spacing */
     }
 </style>  
 </head>
@@ -18,7 +32,9 @@
     <pre id="state">
 
     </pre>
-    <canvas id="board"></canvas>
+    <div id="canvas-container">
+        <canvas id="board"></canvas>
+    </div>
     <script type="module" src="utils.js"></script>
     <script type="module" src="index.js"></script>
   </body>
