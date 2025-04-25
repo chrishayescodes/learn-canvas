@@ -66,6 +66,10 @@ canvas.addEventListener("mouseover", function (event) {
 
 canvas.addEventListener("mouseleave", function (event) {
     isover = false;
+    for (const dz of state.dzs) {
+        dz.over = false;
+    }
+    draw();
 });
 
 canvas.addEventListener("mousedown", function (event) {
