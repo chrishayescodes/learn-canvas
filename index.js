@@ -81,28 +81,41 @@ canvas.addEventListener("mouseup", function (event) {
 });
 
 canvas.addEventListener("mousemove", function (event) {
-    if (isover) {
-        const x = document.getElementById("x");
-        const y = document.getElementById("y");
-        x.innerText = `(x:${event.x})`;
-        y.innerText = `(y:${event.y})`;
-    }
-    const canevent = getMousePos(event);
-    if (isover && isdown) {
-        let selected = false;
+    if (!isover) return;
+
+    const mousePos = getMousePos(event);
+
+    // Update mouse position display
+    const x = document.getElementById("x");
+    const y = document.getElementById("y");
+    x.innerText = `(x:${mousePos.x})`;
+    y.innerText = `(y:${mousePos.y})`;
+
+    if (isdown) {
+        let needsRedraw = false;
+
+        // Move selected card
         for (const card of state.cards) {
             if (card.selected) {
-                selected = true;
-                card.x = Math.floor(canevent.x - card.width / 2);
-                card.y = Math.floor(canevent.y - card.height / 2);
-                draw();
+                card.x = Math.floor(mousePos.x - card.width / 2);
+                card.y = Math.floor(mousePos.y - card.height / 2);
+                needsRedraw = true;
                 break;
             }
         }
-        if (selected) {
-            for (const dz of state.dzs) {
-                dz.over = isPointInsideRectangle(canevent, dz);
+
+        // Update drop zone hover state
+        for (const dz of state.dzs) {
+            const isOver = isPointInsideRectangle(mousePos, dz);
+            if (dz.over !== isOver) {
+                dz.over = isOver;
+                needsRedraw = true;
             }
+        }
+
+        // Redraw only if necessary
+        if (needsRedraw) {
+            draw();
         }
     }
 });
