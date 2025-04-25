@@ -29,11 +29,11 @@ let state = {
 function positionDropZones(canvasWidth, canvasHeight) {
     const dropZones = state.dzs;
     const columnWidth = canvasWidth / dropZones.length; // Divide canvas width by the number of drop zones
-    const dropZoneHeight = canvasHeight - 20; // Leave some padding at the top and bottom
+    const dropZoneHeight = canvasHeight - TITLE_HEIGHT - 20; // Leave space for titles and padding
 
     for (let i = 0; i < dropZones.length; i++) {
         dropZones[i].x = i * columnWidth; // Position each drop zone in its column
-        dropZones[i].y = 10; // Fixed padding from the top
+        dropZones[i].y = TITLE_HEIGHT; // Start below the title area
         dropZones[i].width = columnWidth - 10; // Leave some padding between columns
         dropZones[i].height = dropZoneHeight;
     }
@@ -85,13 +85,20 @@ updateCardSizes();
 
 function drawDropZones() {
     for (const dz of state.dzs) {
+        // Draw the drop zone background
         ctx.fillStyle = dz.over ? COLORS.DROPZONE_HOVER : COLORS.DROPZONE_DEFAULT;
         ctx.fillRect(dz.x, dz.y, dz.width, dz.height);
 
-        // Add text label for the drop zone
+        // Draw the title above the drop zone
         ctx.fillStyle = "black";
         ctx.font = "16px Arial";
-        ctx.fillText(dz.name, dz.x + 10, dz.y + 20); // Position the text inside the drop zone
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(
+            dz.name,
+            dz.x + dz.width / 2, // Center horizontally
+            dz.y - TITLE_HEIGHT / 2 // Position vertically in the title area
+        );
     }
 }
 
