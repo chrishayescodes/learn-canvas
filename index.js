@@ -59,6 +59,7 @@ function getMousePos(evt) {
 
 let isover = false;
 let isdown = false;
+let needsRedraw = false;
 
 canvas.addEventListener("mouseover", function (event) {
     isover = true;
@@ -69,7 +70,7 @@ canvas.addEventListener("mouseleave", function (event) {
     for (const dz of state.dzs) {
         dz.over = false;
     }
-    draw();
+    needsRedraw = true;
 });
 
 canvas.addEventListener("mousedown", function (event) {
@@ -78,7 +79,7 @@ canvas.addEventListener("mousedown", function (event) {
     for (const card of state.cards) {
         card.selected = isPointInsideRectangle(canevent, card);
     }
-    draw();
+    needsRedraw = true;
 });
 
 canvas.addEventListener("mouseup", function (event) {
@@ -102,7 +103,7 @@ canvas.addEventListener("mouseup", function (event) {
         dz.over = false;
     }
 
-    draw();
+    needsRedraw = true;
 });
 
 canvas.addEventListener("mousemove", function (event) {
@@ -117,8 +118,6 @@ canvas.addEventListener("mousemove", function (event) {
     y.innerText = `(y:${mousePos.y})`;
 
     if (isdown) {
-        let needsRedraw = false;
-
         // Move selected card
         for (const card of state.cards) {
             if (card.selected) {
@@ -138,12 +137,16 @@ canvas.addEventListener("mousemove", function (event) {
                 needsRedraw = true;
             }
         }
-
-        // Redraw only if necessary
-        if (needsRedraw) {
-            draw();
-        }
     }
 });
 
-draw();
+function animationLoop() {
+    if (needsRedraw) {
+        draw();
+        needsRedraw = false; // Reset the flag after redrawing
+    }
+    requestAnimationFrame(animationLoop); // Schedule the next frame
+}
+
+// Start the animation loop
+animationLoop();
