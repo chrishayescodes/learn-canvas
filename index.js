@@ -49,6 +49,9 @@ function draw() {
     drawCards();
 }
 
+// Draw the initial state
+draw();
+
 function getMousePos(evt) {
     var rect = canvas.getBoundingClientRect();
     return {
