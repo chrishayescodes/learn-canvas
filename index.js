@@ -15,8 +15,56 @@ const ctx = canvas.getContext("2d");
 
 let state = {
     cards: [
-        { title: "card 1", color: COLORS.CARD_DEFAULT, selected: false, column: 0, position: 0 }, // First card in "To Do"
-        { title: "card 2", color: COLORS.CARD_DEFAULT, selected: false, column: 1, position: 0 }, // First card in "In Progress"
+        { title: "card 1", color: "green", selected: false, column: 0, position: 0 },
+        { title: "card 2", color: "blue", selected: false, column: 1, position: 0 },
+        { title: "card 3", color: "red", selected: false, column: 2, position: 0 },
+        { title: "card 4", color: "yellow", selected: false, column: 3, position: 0 },
+        { title: "card 5", color: "purple", selected: false, column: 0, position: 1 },
+        { title: "card 6", color: "orange", selected: false, column: 1, position: 1 },
+        { title: "card 7", color: "green", selected: false, column: 2, position: 1 },
+        { title: "card 8", color: "blue", selected: false, column: 3, position: 1 },
+        { title: "card 9", color: "red", selected: false, column: 0, position: 2 },
+        { title: "card 10", color: "yellow", selected: false, column: 1, position: 2 },
+        { title: "card 11", color: "purple", selected: false, column: 2, position: 2 },
+        { title: "card 12", color: "orange", selected: false, column: 3, position: 2 },
+        { title: "card 13", color: "green", selected: false, column: 0, position: 3 },
+        { title: "card 14", color: "blue", selected: false, column: 1, position: 3 },
+        { title: "card 15", color: "red", selected: false, column: 2, position: 3 },
+        { title: "card 16", color: "yellow", selected: false, column: 3, position: 3 },
+        { title: "card 17", color: "purple", selected: false, column: 0, position: 4 },
+        { title: "card 18", color: "orange", selected: false, column: 1, position: 4 },
+        { title: "card 19", color: "green", selected: false, column: 2, position: 4 },
+        { title: "card 20", color: "blue", selected: false, column: 3, position: 4 },
+        { title: "card 21", color: "red", selected: false, column: 0, position: 5 },
+        { title: "card 22", color: "yellow", selected: false, column: 1, position: 5 },
+        { title: "card 23", color: "purple", selected: false, column: 2, position: 5 },
+        { title: "card 24", color: "orange", selected: false, column: 3, position: 5 },
+        { title: "card 25", color: "green", selected: false, column: 0, position: 6 },
+        { title: "card 26", color: "blue", selected: false, column: 1, position: 6 },
+        { title: "card 27", color: "red", selected: false, column: 2, position: 6 },
+        { title: "card 28", color: "yellow", selected: false, column: 3, position: 6 },
+        { title: "card 29", color: "purple", selected: false, column: 0, position: 7 },
+        { title: "card 30", color: "orange", selected: false, column: 1, position: 7 },
+        { title: "card 31", color: "green", selected: false, column: 2, position: 7 },
+        { title: "card 32", color: "blue", selected: false, column: 3, position: 7 },
+        { title: "card 33", color: "red", selected: false, column: 0, position: 8 },
+        { title: "card 34", color: "yellow", selected: false, column: 1, position: 8 },
+        { title: "card 35", color: "purple", selected: false, column: 2, position: 8 },
+        { title: "card 36", color: "orange", selected: false, column: 3, position: 8 },
+        { title: "card 37", color: "green", selected: false, column: 0, position: 9 },
+        { title: "card 38", color: "blue", selected: false, column: 1, position: 9 },
+        { title: "card 39", color: "red", selected: false, column: 2, position: 9 },
+        { title: "card 40", color: "yellow", selected: false, column: 3, position: 9 },
+        { title: "card 41", color: "purple", selected: false, column: 0, position: 10 },
+        { title: "card 42", color: "orange", selected: false, column: 1, position: 10 },
+        { title: "card 43", color: "green", selected: false, column: 2, position: 10 },
+        { title: "card 44", color: "blue", selected: false, column: 3, position: 10 },
+        { title: "card 45", color: "red", selected: false, column: 0, position: 11 },
+        { title: "card 46", color: "yellow", selected: false, column: 1, position: 11 },
+        { title: "card 47", color: "purple", selected: false, column: 2, position: 11 },
+        { title: "card 48", color: "orange", selected: false, column: 3, position: 11 },
+        { title: "card 49", color: "green", selected: false, column: 0, position: 12 },
+        { title: "card 50", color: "blue", selected: false, column: 1, position: 12 },
     ],
     dzs: [
         { name: "To Do", over: false },
@@ -42,20 +90,20 @@ function positionDropZones(canvasWidth, canvasHeight) {
 // Position drop zones initially
 positionDropZones(canvas.width, canvas.height);
 
-function calculateCardSize(canvasWidth, canvasHeight, columns, rows) {
+function calculateCardSize(canvasWidth, canvasHeight, columns, cardsPerRow) {
     const columnWidth = canvasWidth / columns; // Width of each column
-    const rowHeight = canvasHeight / rows; // Height of each row
+    const rowHeight = canvasHeight / (cardsPerRow * 2); // Height of each row (adjusted for wrapping)
 
     return {
-        width: columnWidth * 0.8, // Cards take 80% of the column width
+        width: columnWidth / cardsPerRow * 0.8, // Cards take 80% of the available width in a row
         height: rowHeight * 0.8, // Cards take 80% of the row height
     };
 }
 
 function updateCardSizes() {
     const columns = state.dzs.length; // Number of drop zones (columns)
-    const rowsPerColumn = 3; // Example: Maximum number of rows per column
-    const cardSize = calculateCardSize(canvas.width, canvas.height - TITLE_HEIGHT, columns, rowsPerColumn);
+    const cardsPerRow = 3; // Maximum number of cards per row
+    const cardSize = calculateCardSize(canvas.width, canvas.height - TITLE_HEIGHT, columns, cardsPerRow);
 
     // Group cards by column
     const cardsByColumn = Array.from({ length: columns }, () => []);
@@ -73,14 +121,17 @@ function updateCardSizes() {
     for (let columnIndex = 0; columnIndex < cardsByColumn.length; columnIndex++) {
         const columnCards = cardsByColumn[columnIndex];
         const columnWidth = canvas.width / columns;
-        const rowHeight = (canvas.height - TITLE_HEIGHT) / rowsPerColumn;
+        const rowHeight = cardSize.height + 10; // Add spacing between rows
 
-        for (let rowIndex = 0; rowIndex < columnCards.length; rowIndex++) {
-            const card = columnCards[rowIndex];
+        for (let cardIndex = 0; cardIndex < columnCards.length; cardIndex++) {
+            const card = columnCards[cardIndex];
+            const rowIndex = Math.floor(cardIndex / cardsPerRow); // Determine the row
+            const colIndex = cardIndex % cardsPerRow; // Determine the position in the row
+
             card.width = cardSize.width;
             card.height = cardSize.height;
-            card.x = columnIndex * columnWidth + (columnWidth - card.width) / 2; // Center card in column
-            card.y = TITLE_HEIGHT + rowIndex * rowHeight + (rowHeight - card.height) / 2; // Stack cards vertically below the title
+            card.x = columnIndex * columnWidth + colIndex * (card.width + 10); // Add spacing between cards
+            card.y = TITLE_HEIGHT + rowIndex * rowHeight; // Add spacing between rows
         }
     }
 }
