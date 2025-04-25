@@ -15,8 +15,8 @@ const ctx = canvas.getContext("2d");
 
 let state = {
     cards: [
-        { title: "card 1", x: 0, y: 0, color: COLORS.CARD_DEFAULT, selected: false, column: 0 }, // Assigned to "To Do"
-        { title: "card 2", x: 0, y: 0, color: COLORS.CARD_DEFAULT, selected: false, column: 1 }, // Assigned to "In Progress"
+        { title: "card 1", x: 0, y: 0, color: COLORS.CARD_DEFAULT, selected: false, column: 0, position: 0 }, // First card in "To Do"
+        { title: "card 2", x: 0, y: 0, color: COLORS.CARD_DEFAULT, selected: false, column: 1, position: 0 }, // First card in "In Progress"
     ],
     dzs: [
         { name: "To Do", over: false },
@@ -62,6 +62,11 @@ function updateCardSizes() {
 
     for (const card of state.cards) {
         cardsByColumn[card.column].push(card);
+    }
+
+    // Sort cards within each column by their position
+    for (const columnCards of cardsByColumn) {
+        columnCards.sort((a, b) => a.position - b.position);
     }
 
     // Position cards within their respective columns
@@ -191,8 +196,14 @@ canvas.addEventListener("mouseup", function (event) {
             for (let i = 0; i < state.dzs.length; i++) {
                 const dz = state.dzs[i];
                 if (isPointInsideRectangle({ x: card.x + card.width / 2, y: card.y + card.height / 2 }, dz)) {
-                    // Snap the card to the center of the drop zone
-                    card.column = i; // Update the card's column
+                    // Update the card's column
+                    if (card.column !== i) {
+                        card.column = i;
+
+                        // Assign the next available position in the new column
+                        const cardsInColumn = state.cards.filter(c => c.column === i);
+                        card.position = cardsInColumn.length;
+                    }
                     updateCardSizes(); // Recalculate card positions
                     break;
                 }
