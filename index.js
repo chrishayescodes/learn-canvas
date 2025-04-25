@@ -76,9 +76,18 @@ canvas.addEventListener("mouseleave", function (event) {
 canvas.addEventListener("mousedown", function (event) {
     isdown = true;
     const canevent = getMousePos(event);
+
     for (const card of state.cards) {
-        card.selected = isPointInsideRectangle(canevent, card);
+        card.selected = false; // Deselect all cards
     }
+
+    for (const card of state.cards) {
+        if (isPointInsideRectangle(canevent, card)) {
+            card.selected = true;
+            break; // Stop after selecting one card
+        }
+    }
+
     needsRedraw = true;
 });
 
