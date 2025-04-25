@@ -8,12 +8,15 @@ const COLORS = {
     BACKGROUND: "white",
 };
 
+const TITLE_HEIGHT = 30; // Height of the column titles
+
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
 let state = {
     cards: [
-        { x: 20, y: 20, color: COLORS.CARD_DEFAULT, selected: false },
+        { title: "card 1", x: 0, y: 0, color: COLORS.CARD_DEFAULT, selected: false, column: 0 }, // Assigned to "To Do"
+        { title: "card 2", x: 0, y: 0, color: COLORS.CARD_DEFAULT, selected: false, column: 1 }, // Assigned to "In Progress"
     ],
     dzs: [
         { name: "To Do", over: false },
@@ -51,12 +54,29 @@ function calculateCardSize(canvasWidth, canvasHeight, columns, rows) {
 
 function updateCardSizes() {
     const columns = state.dzs.length; // Number of drop zones (columns)
-    const rows = 3; // Example: 3 rows of cards per column
-    const cardSize = calculateCardSize(canvas.width, canvas.height, columns, rows);
+    const rowsPerColumn = 3; // Example: Maximum number of rows per column
+    const cardSize = calculateCardSize(canvas.width, canvas.height - TITLE_HEIGHT, columns, rowsPerColumn);
+
+    // Group cards by column
+    const cardsByColumn = Array.from({ length: columns }, () => []);
 
     for (const card of state.cards) {
-        card.width = cardSize.width;
-        card.height = cardSize.height;
+        cardsByColumn[card.column].push(card);
+    }
+
+    // Position cards within their respective columns
+    for (let columnIndex = 0; columnIndex < cardsByColumn.length; columnIndex++) {
+        const columnCards = cardsByColumn[columnIndex];
+        const columnWidth = canvas.width / columns;
+        const rowHeight = (canvas.height - TITLE_HEIGHT) / rowsPerColumn;
+
+        for (let rowIndex = 0; rowIndex < columnCards.length; rowIndex++) {
+            const card = columnCards[rowIndex];
+            card.width = cardSize.width;
+            card.height = cardSize.height;
+            card.x = columnIndex * columnWidth + (columnWidth - card.width) / 2; // Center card in column
+            card.y = TITLE_HEIGHT + rowIndex * rowHeight + (rowHeight - card.height) / 2; // Stack cards vertically below the title
+        }
     }
 }
 
@@ -77,7 +97,7 @@ function drawDropZones() {
 
 function drawCards() {
     for (const card of state.cards) {
-        // Draw card
+        // Draw card background
         ctx.fillStyle = card.color || COLORS.CARD_DEFAULT;
         ctx.fillRect(card.x, card.y, card.width, card.height);
 
@@ -87,6 +107,17 @@ function drawCards() {
             ctx.lineWidth = 2;
             ctx.strokeRect(card.x, card.y, card.width, card.height);
         }
+
+        // Draw card title
+        ctx.fillStyle = "black"; // Text color
+        ctx.font = "14px Arial"; // Font size and style
+        ctx.textAlign = "center"; // Center the text horizontally
+        ctx.textBaseline = "middle"; // Center the text vertically
+        ctx.fillText(
+            card.title,
+            card.x + card.width / 2, // Center horizontally within the card
+            card.y + card.height / 2 // Center vertically within the card
+        );
     }
 }
 
@@ -150,11 +181,13 @@ canvas.addEventListener("mouseup", function (event) {
     for (const card of state.cards) {
         if (card.selected) {
             // Check if the card is inside any drop zone
-            for (const dz of state.dzs) {
+            for (let i = 0; i < state.dzs.length; i++) {
+                const dz = state.dzs[i];
                 if (isPointInsideRectangle({ x: card.x + card.width / 2, y: card.y + card.height / 2 }, dz)) {
                     // Snap the card to the center of the drop zone
-                    card.x = dz.x + (dz.width - card.width) / 2;
-                    card.y = dz.y + (dz.height - card.height) / 2;
+                    card.column = i; // Update the card's column
+                    updateCardSizes(); // Recalculate card positions
+                    break;
                 }
             }
         }
