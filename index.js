@@ -39,6 +39,30 @@ function positionDropZones(canvasWidth, canvasHeight) {
 // Position drop zones initially
 positionDropZones(canvas.width, canvas.height);
 
+function calculateCardSize(canvasWidth, canvasHeight, columns, rows) {
+    const columnWidth = canvasWidth / columns; // Width of each column
+    const rowHeight = canvasHeight / rows; // Height of each row
+
+    return {
+        width: columnWidth * 0.8, // Cards take 80% of the column width
+        height: rowHeight * 0.8, // Cards take 80% of the row height
+    };
+}
+
+function updateCardSizes() {
+    const columns = state.dzs.length; // Number of drop zones (columns)
+    const rows = 3; // Example: 3 rows of cards per column
+    const cardSize = calculateCardSize(canvas.width, canvas.height, columns, rows);
+
+    for (const card of state.cards) {
+        card.width = cardSize.width;
+        card.height = cardSize.height;
+    }
+}
+
+// Call this function after resizing or initializing
+updateCardSizes();
+
 function drawDropZones() {
     for (const dz of state.dzs) {
         ctx.fillStyle = dz.over ? COLORS.DROPZONE_HOVER : COLORS.DROPZONE_DEFAULT;
@@ -185,6 +209,9 @@ function resizeCanvas() {
 
     // Recalculate drop zone positions
     positionDropZones(canvas.width, canvas.height);
+
+    // Recalculate card sizes
+    updateCardSizes();
 
     draw(); // Redraw the canvas after resizing
 }
