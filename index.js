@@ -16,21 +16,29 @@ function isPointInsideRectangle(point, rect) {
         y >= rectY && y <= rectY + height;
 }
 
+function drawDropZones() {
+    for (const dz of state.dzs) {
+        ctx.fillStyle = dz.over ? "red" : "silver";
+        ctx.fillRect(dz.x, dz.y, dz.width, dz.height);
+    }
+}
+
+function drawCards() {
+    for (const card of state.cards) {
+        ctx.fillStyle = card.selected ? "blue" : card.color;
+        ctx.fillRect(card.x, card.y, card.width, card.height);
+    }
+}
+
 function draw() {
     const statejson = document.getElementById("state");
     statejson.innerText = JSON.stringify(state, null, 2);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    for (const dz of state.dzs) {
-        ctx.fillStyle = dz.over ? "red" : "silver";
-        ctx.fillRect(dz.x, dz.y, dz.width, dz.height);
-    }
 
-    for (const card of state.cards) {
-        ctx.fillStyle = card.selected ? "blue" : "green";
-        ctx.fillRect(card.x, card.y, card.width, card.height);
-    }
+    drawDropZones();
+    drawCards();
 }
 
 function getMousePos(evt) {
