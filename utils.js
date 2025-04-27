@@ -5,3 +5,10 @@ export function isPointInsideRectangle(point, rect) {
     return x >= rectX && x <= rectX + width &&
         y >= rectY && y <= rectY + height;
 }
+
+
+// Get mouse position relative to canvas
+export function getMousePos(event, canvas) {
+    const rect = canvas.getBoundingClientRect();
+    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+}

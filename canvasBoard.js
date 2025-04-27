@@ -1,4 +1,4 @@
-import { isPointInsideRectangle } from "./utils.js";
+import { isPointInsideRectangle, getMousePos } from "./utils.js";
 
 export function canvasBoard(canvasid, canvascontainerid) {
     const COLORS = {
@@ -120,7 +120,7 @@ export function canvasBoard(canvasid, canvascontainerid) {
     // Handle mouse events
     function handleMouseDown(event) {
         isMouseDown = true;
-        const mousePos = getMousePos(event);
+        const mousePos = getMousePos(event, canvas);
 
         state.cards.forEach((card, index) => {
             if (isPointInsideRectangle(mousePos, card)) {
@@ -176,7 +176,7 @@ export function canvasBoard(canvasid, canvascontainerid) {
     function handleMouseMove(event) {
         if (!isMouseDown) return;
 
-        const mousePos = getMousePos(event);
+        const mousePos = getMousePos(event, canvas);
         state.cards.forEach(card => {
             if (card.selected) {
                 card.x = Math.max(0, Math.min(canvas.width - card.width, mousePos.x - card.width / 2));
@@ -188,12 +188,6 @@ export function canvasBoard(canvasid, canvascontainerid) {
         state.dzs.forEach(dz => {
             dz.over = isPointInsideRectangle(mousePos, dz);
         });
-    }
-
-    // Get mouse position relative to canvas
-    function getMousePos(event) {
-        const rect = canvas.getBoundingClientRect();
-        return { x: event.clientX - rect.left, y: event.clientY - rect.top };
     }
 
     // Animation loop
