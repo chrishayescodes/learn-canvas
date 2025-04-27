@@ -1,4 +1,4 @@
-import { canvasBoard } from "./canvasBoard.js";
+import { canvasBoard } from "./canvas/canvasBoard.js";
 
 async function initializeBoard() {
   try {
