@@ -131,17 +131,35 @@ export function canvasBoard(canvasid, canvascontainerid) {
 
         state.cards.forEach(card => {
             if (card.selected) {
+                let droppedInZone = false;
+
+                // Check if the card is dropped inside any drop zone
                 state.dzs.forEach((dz, i) => {
                     if (isPointInsideRectangle({ x: card.x + card.width / 2, y: card.y + card.height / 2 }, dz)) {
-                        card.column = i;
-                        card.position = state.cards.filter(c => c.column === i).length;
+                        droppedInZone = true;
+
+                        if (card.column !== i) {
+                            // If dropped in a new drop zone, update column and position
+                            card.column = i;
+                            card.position = state.cards.filter(c => c.column === i).length;
+                        }
                     }
                 });
+
+                // If not dropped in any zone, reset to original position
+                if (!droppedInZone) {
+                    const originalDropZone = state.dzs[card.column];
+                    card.x = originalDropZone.x + (originalDropZone.width - card.width) / 2;
+                    card.y = originalDropZone.y + (originalDropZone.height - card.height) / 2;
+                }
+
                 card.selected = false;
             }
         });
 
+        // Reset hover state for all drop zones
         state.dzs.forEach(dz => (dz.over = false));
+
         updateCardSizes();
         needsRedraw = true;
     }
