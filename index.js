@@ -1,65 +1,32 @@
 import { canvasBoard } from "./canvasBoard.js";
 
-let state = {
-    cards: [
-        { title: "card 1", color: "green", selected: false, column: 0, position: 0 },
-        { title: "card 2", color: "blue", selected: false, column: 1, position: 0 },
-        { title: "card 3", color: "red", selected: false, column: 2, position: 0 },
-        { title: "card 4", color: "yellow", selected: false, column: 3, position: 0 },
-        { title: "card 5", color: "purple", selected: false, column: 0, position: 1 },
-        { title: "card 6", color: "orange", selected: false, column: 1, position: 1 },
-        { title: "card 7", color: "green", selected: false, column: 2, position: 1 },
-        { title: "card 8", color: "blue", selected: false, column: 3, position: 1 },
-        { title: "card 9", color: "red", selected: false, column: 0, position: 2 },
-        { title: "card 10", color: "yellow", selected: false, column: 1, position: 2 },
-        { title: "card 11", color: "purple", selected: false, column: 2, position: 2 },
-        { title: "card 12", color: "orange", selected: false, column: 3, position: 2 },
-        { title: "card 13", color: "green", selected: false, column: 0, position: 3 },
-        { title: "card 14", color: "blue", selected: false, column: 1, position: 3 },
-        { title: "card 15", color: "red", selected: false, column: 2, position: 3 },
-        { title: "card 16", color: "yellow", selected: false, column: 3, position: 3 },
-        { title: "card 17", color: "purple", selected: false, column: 0, position: 4 },
-        { title: "card 18", color: "orange", selected: false, column: 1, position: 4 },
-        { title: "card 19", color: "green", selected: false, column: 2, position: 4 },
-        { title: "card 20", color: "blue", selected: false, column: 3, position: 4 },
-        { title: "card 21", color: "red", selected: false, column: 0, position: 5 },
-        { title: "card 22", color: "yellow", selected: false, column: 1, position: 5 },
-        { title: "card 23", color: "purple", selected: false, column: 2, position: 5 },
-        { title: "card 24", color: "orange", selected: false, column: 3, position: 5 },
-        { title: "card 25", color: "green", selected: false, column: 0, position: 6 },
-        { title: "card 26", color: "blue", selected: false, column: 1, position: 6 },
-        { title: "card 27", color: "red", selected: false, column: 2, position: 6 },
-        { title: "card 28", color: "yellow", selected: false, column: 3, position: 6 },
-        { title: "card 29", color: "purple", selected: false, column: 0, position: 7 },
-        { title: "card 30", color: "orange", selected: false, column: 1, position: 7 },
-        { title: "card 31", color: "green", selected: false, column: 2, position: 7 },
-        { title: "card 32", color: "blue", selected: false, column: 3, position: 7 },
-        { title: "card 33", color: "red", selected: false, column: 0, position: 8 },
-        { title: "card 34", color: "yellow", selected: false, column: 1, position: 8 },
-        { title: "card 35", color: "purple", selected: false, column: 2, position: 8 },
-        { title: "card 36", color: "orange", selected: false, column: 3, position: 8 },
-        { title: "card 37", color: "green", selected: false, column: 0, position: 9 },
-        { title: "card 38", color: "blue", selected: false, column: 1, position: 9 },
-        { title: "card 39", color: "red", selected: false, column: 2, position: 9 },
-        { title: "card 40", color: "yellow", selected: false, column: 3, position: 9 },
-        { title: "card 41", color: "purple", selected: false, column: 0, position: 10 },
-        { title: "card 42", color: "orange", selected: false, column: 1, position: 10 },
-        { title: "card 43", color: "green", selected: false, column: 2, position: 10 },
-        { title: "card 44", color: "blue", selected: false, column: 3, position: 10 },
-        { title: "card 45", color: "red", selected: false, column: 0, position: 11 },
-        { title: "card 46", color: "yellow", selected: false, column: 1, position: 11 },
-        { title: "card 47", color: "purple", selected: false, column: 2, position: 11 },
-        { title: "card 48", color: "orange", selected: false, column: 3, position: 11 },
-        { title: "card 49", color: "green", selected: false, column: 0, position: 12 },
-        { title: "card 50", color: "blue", selected: false, column: 1, position: 12 },
-    ],
-    dzs: [
-        { name: "To Do", over: false },
-        { name: "In Progress", over: false },
-        { name: "Review", over: false },
-        { name: "Done", over: false },
-    ],
-};
+let board;
 
-const board = canvasBoard("board","canvas-container");
-board.setState(state);
+// Fetch the theme from the JSON file
+fetch("./theme.json")
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Failed to load theme.json: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(theme => {
+        // Initialize the canvas board with the fetched theme
+        board = canvasBoard("board", "canvas-container", theme);
+
+        // Fetch the state from the JSON file
+        return fetch("./state.json");
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Failed to load state.json: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Set the state for the board
+        board.setState(data);
+    })
+    .catch(error => {
+        console.error("Error loading data:", error);
+    });

@@ -13,15 +13,21 @@ export function drawDropZones(ctx, state, COLORS, TITLE_HEIGHT) {
 
 export function drawCards(ctx, state, COLORS) {
     state.cards.forEach(card => {
-        ctx.fillStyle = card.color || COLORS.CARD_DEFAULT;
+        // Get the color based on the card type, fallback to CARD_DEFAULT
+        const cardColor = COLORS.CARD_TYPE_COLORS[card.type] || COLORS.CARD_DEFAULT;
+
+        // Draw the card background
+        ctx.fillStyle = cardColor;
         ctx.fillRect(card.x, card.y, card.width, card.height);
 
+        // Draw the border if the card is selected
         if (card.selected) {
             ctx.strokeStyle = COLORS.CARD_SELECTED_BORDER;
             ctx.lineWidth = 2;
             ctx.strokeRect(card.x, card.y, card.width, card.height);
         }
 
+        // Draw the card title
         ctx.fillStyle = "black";
         ctx.font = "14px Arial";
         ctx.textAlign = "center";

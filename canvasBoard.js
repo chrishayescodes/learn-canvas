@@ -1,15 +1,10 @@
 import { isPointInsideRectangle, getMousePos } from "./utils.js";
 import { draw } from "./draw.js";
 import { state, resizeCanvas, positionDropZones, updateCardSizes } from "./state.js";
+import { defaultTheme } from "./theme.js";
 
-export function canvasBoard(canvasid, canvascontainerid) {
-    const COLORS = {
-        CARD_DEFAULT: "green",
-        CARD_SELECTED_BORDER: "blue",
-        DROPZONE_DEFAULT: "silver",
-        DROPZONE_HOVER: "gray",
-        BACKGROUND: "white",
-    };
+export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
+    const COLORS = { ...defaultTheme, ...theme }; // Merge default theme with custom theme
 
     const TITLE_HEIGHT = 30;
     const canvas = document.getElementById(canvasid);
@@ -108,6 +103,10 @@ export function canvasBoard(canvasid, canvascontainerid) {
             state.dzs = newState.dzs;
             positionDropZones(canvas, state, TITLE_HEIGHT);
             updateCardSizes(canvas, state, TITLE_HEIGHT);
+            needsRedraw = true;
+        },
+        setTheme(newTheme) {
+            Object.assign(COLORS, newTheme); // Update the theme dynamically
             needsRedraw = true;
         },
     };
