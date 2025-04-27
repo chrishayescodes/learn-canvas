@@ -84,16 +84,14 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
         requestAnimationFrame(animationLoop);
     }
 
-    resizeCanvas(canvas, canvascontainerid, () => positionDropZones(canvas, state, TITLE_HEIGHT), () =>
-        updateCardSizes(canvas, state, TITLE_HEIGHT)
-    );
-    window.addEventListener("resize", () => {
+    function resize() {
         resizeCanvas(canvas, canvascontainerid, () => positionDropZones(canvas, state, TITLE_HEIGHT), () =>
             updateCardSizes(canvas, state, TITLE_HEIGHT)
         );
         needsRedraw = true;
     }
-    );
+    resize();
+    window.addEventListener("resize", resize);
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mouseup", handleMouseUp);
     canvas.addEventListener("mousemove", handleMouseMove);
