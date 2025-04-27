@@ -2,31 +2,27 @@ import { canvasBoard } from "./canvasBoard.js";
 
 let board;
 
-// Fetch the theme from the JSON file
-fetch("./theme.json")
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Failed to load theme.json: ${response.statusText}`);
-        }
-        return response.json();
-    })
-    .then(theme => {
-        // Initialize the canvas board with the fetched theme
-        board = canvasBoard("board", "canvas-container", theme);
+// Fetch themes and initialize the board
+fetch("./themes.json")
+  .then(response => response.json())
+  .then(themes => {
+    const themeSelector = document.getElementById("theme-selector");
 
-        // Fetch the state from the JSON file
-        return fetch("./state.json");
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Failed to load state.json: ${response.statusText}`);
+    // Initialize the board with the default theme
+    const selectedTheme = themes["default"];
+    board = canvasBoard("board", "canvas-container", selectedTheme);
+
+    // Fetch and set the state
+    return fetch("./state.json").then(response => response.json()).then(data => {
+      board.setState(data);
+
+      // Add event listener for theme changes
+      themeSelector.addEventListener("change", event => {
+        const newTheme = themes[event.target.value];
+        if (newTheme) {
+          board.setTheme(newTheme); // Dynamically update the theme
         }
-        return response.json();
-    })
-    .then(data => {
-        // Set the state for the board
-        board.setState(data);
-    })
-    .catch(error => {
-        console.error("Error loading data:", error);
+      });
     });
+  })
+  .catch(error => console.error("Error loading themes or state:", error));

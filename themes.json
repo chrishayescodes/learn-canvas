@@ -1,0 +1,58 @@
+{
+    "default": {
+        "CARD_DEFAULT": "#1E88E5",
+        "CARD_SELECTED_BORDER": "#D32F2F",
+        "DROPZONE_DEFAULT": "#37474F",
+        "DROPZONE_HOVER": "#FFCA28",
+        "BACKGROUND": "#263238",
+        "CARD_TYPE_COLORS": {
+            "dev": "#00E676",
+            "art": "#FF4081",
+            "infra": "#7C4DFF"
+        },
+        "CARD_TEXT_COLOR": "#FFFFFF",
+        "DROPZONE_TEXT_COLOR": "#FFFFFF"
+    },
+    "light": {
+        "CARD_DEFAULT": "#90CAF9",
+        "CARD_SELECTED_BORDER": "#F44336",
+        "DROPZONE_DEFAULT": "#E0E0E0",
+        "DROPZONE_HOVER": "#FFEB3B",
+        "BACKGROUND": "#FAFAFA",
+        "CARD_TYPE_COLORS": {
+            "dev": "#4CAF50",
+            "art": "#FF80AB",
+            "infra": "#B39DDB"
+        },
+        "CARD_TEXT_COLOR": "#000000",
+        "DROPZONE_TEXT_COLOR": "#000000"
+    },
+    "dark": {
+        "CARD_DEFAULT": "#1E88E5",
+        "CARD_SELECTED_BORDER": "#FF5722",
+        "DROPZONE_DEFAULT": "#424242",
+        "DROPZONE_HOVER": "#FFC107",
+        "BACKGROUND": "#212121",
+        "CARD_TYPE_COLORS": {
+            "dev": "#00E676",
+            "art": "#FF4081",
+            "infra": "#7C4DFF"
+        },
+        "CARD_TEXT_COLOR": "#FFFFFF",
+        "DROPZONE_TEXT_COLOR": "#FFFFFF"
+    },
+    "vibrant": {
+        "CARD_DEFAULT": "#FF5252",
+        "CARD_SELECTED_BORDER": "#FF4081",
+        "DROPZONE_DEFAULT": "#FFEB3B",
+        "DROPZONE_HOVER": "#69F0AE",
+        "BACKGROUND": "#00BCD4",
+        "CARD_TYPE_COLORS": {
+            "dev": "#8BC34A",
+            "art": "#FF5722",
+            "infra": "#3F51B5"
+        },
+        "CARD_TEXT_COLOR": "#FFFFFF",
+        "DROPZONE_TEXT_COLOR": "#000000"
+    }
+}
