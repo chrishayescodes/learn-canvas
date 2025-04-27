@@ -122,8 +122,17 @@ export function canvasBoard(canvasid, canvascontainerid) {
         isMouseDown = true;
         const mousePos = getMousePos(event);
 
-        state.cards.forEach(card => (card.selected = isPointInsideRectangle(mousePos, card)));
-        needsRedraw = true;
+        state.cards.forEach((card, index) => {
+            if (isPointInsideRectangle(mousePos, card)) {
+                card.selected = true;
+
+                // Move the selected card to the end of the array
+                state.cards.splice(index, 1); // Remove the card from its current position
+                state.cards.push(card); // Add it to the end of the array
+
+                needsRedraw = true;
+            }
+        });
     }
 
     function handleMouseUp(event) {
