@@ -9,8 +9,7 @@ export function canvasBoard(canvasid, canvascontainerid) {
         BACKGROUND: "white",
     };
 
-    const TITLE_HEIGHT = 30; // Height of the column titles
-
+    const TITLE_HEIGHT = 30;
     const canvas = document.getElementById(canvasid);
     const ctx = canvas.getContext("2d");
 
@@ -19,116 +18,96 @@ export function canvasBoard(canvasid, canvascontainerid) {
         dzs: [],
     };
 
-    function positionDropZones(canvasWidth, canvasHeight) {
-        const dropZones = state.dzs;
-        const columnWidth = canvasWidth / dropZones.length; // Divide canvas width by the number of drop zones
-        const dropZoneHeight = canvasHeight - TITLE_HEIGHT - 20; // Leave space for titles and padding
+    let isMouseDown = false;
+    let needsRedraw = false;
 
-        for (let i = 0; i < dropZones.length; i++) {
-            dropZones[i].x = i * columnWidth; // Position each drop zone in its column
-            dropZones[i].y = TITLE_HEIGHT; // Start below the title area
-            dropZones[i].width = columnWidth - 10; // Leave some padding between columns
-            dropZones[i].height = dropZoneHeight;
-        }
+    // Utility: Resize canvas and recalculate positions
+    function resizeCanvas() {
+        const container = document.getElementById(canvascontainerid);
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+
+        positionDropZones();
+        updateCardSizes();
+        needsRedraw = true;
     }
 
-    // Position drop zones initially
-    positionDropZones(canvas.width, canvas.height);
+    // Position drop zones
+    function positionDropZones() {
+        const { width, height } = canvas;
+        const columnWidth = width / state.dzs.length;
+        const dropZoneHeight = height - TITLE_HEIGHT - 20;
 
-    function calculateCardSize(canvasWidth, canvasHeight, columns, cardsPerRow) {
-        const columnWidth = canvasWidth / columns; // Width of each column
-        const rowHeight = canvasHeight / (cardsPerRow * 2); // Height of each row (adjusted for wrapping)
-
-        return {
-            width: columnWidth / cardsPerRow * 0.8, // Cards take 80% of the available width in a row
-            height: rowHeight * 0.8, // Cards take 80% of the row height
-        };
+        state.dzs.forEach((dz, i) => {
+            dz.x = i * columnWidth;
+            dz.y = TITLE_HEIGHT;
+            dz.width = columnWidth - 10;
+            dz.height = dropZoneHeight;
+        });
     }
 
+    // Update card sizes and positions
     function updateCardSizes() {
-        const columns = state.dzs.length; // Number of drop zones (columns)
-        const cardsPerRow = 3; // Maximum number of cards per row
-        const cardSize = calculateCardSize(canvas.width, canvas.height - TITLE_HEIGHT, columns, cardsPerRow);
+        const { width, height } = canvas;
+        const columns = state.dzs.length;
+        const cardsPerRow = 3;
+        const cardSize = {
+            width: (width / columns / cardsPerRow) * 0.8,
+            height: ((height - TITLE_HEIGHT) / (cardsPerRow * 2)) * 0.8,
+        };
 
-        // Group cards by column
         const cardsByColumn = Array.from({ length: columns }, () => []);
+        state.cards.forEach(card => cardsByColumn[card.column].push(card));
 
-        for (const card of state.cards) {
-            cardsByColumn[card.column].push(card);
-        }
-
-        // Sort cards within each column by their position
-        for (const columnCards of cardsByColumn) {
+        cardsByColumn.forEach((columnCards, columnIndex) => {
             columnCards.sort((a, b) => a.position - b.position);
-        }
-
-        // Position cards within their respective columns
-        for (let columnIndex = 0; columnIndex < cardsByColumn.length; columnIndex++) {
-            const columnCards = cardsByColumn[columnIndex];
-            const columnWidth = canvas.width / columns;
-            const rowHeight = cardSize.height + 10; // Add spacing between rows
-
-            for (let cardIndex = 0; cardIndex < columnCards.length; cardIndex++) {
-                const card = columnCards[cardIndex];
-                const rowIndex = Math.floor(cardIndex / cardsPerRow); // Determine the row
-                const colIndex = cardIndex % cardsPerRow; // Determine the position in the row
+            columnCards.forEach((card, cardIndex) => {
+                const rowIndex = Math.floor(cardIndex / cardsPerRow);
+                const colIndex = cardIndex % cardsPerRow;
 
                 card.width = cardSize.width;
                 card.height = cardSize.height;
-                card.x = columnIndex * columnWidth + colIndex * (card.width + 10); // Add spacing between cards
-                card.y = TITLE_HEIGHT + rowIndex * rowHeight; // Add spacing between rows
-            }
-        }
+                card.x = columnIndex * (width / columns) + colIndex * (card.width + 10);
+                card.y = TITLE_HEIGHT + rowIndex * (card.height + 10);
+            });
+        });
     }
 
-    // Call this function after resizing or initializing
-    updateCardSizes();
-
+    // Draw drop zones
     function drawDropZones() {
-        for (const dz of state.dzs) {
-            // Draw the drop zone background
+        state.dzs.forEach(dz => {
             ctx.fillStyle = dz.over ? COLORS.DROPZONE_HOVER : COLORS.DROPZONE_DEFAULT;
             ctx.fillRect(dz.x, dz.y, dz.width, dz.height);
 
-            // Draw the title above the drop zone
             ctx.fillStyle = "black";
             ctx.font = "16px Arial";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillText(
-                dz.name,
-                dz.x + dz.width / 2, // Center horizontally
-                dz.y - TITLE_HEIGHT / 2 // Position vertically in the title area
-            );
-        }
+            ctx.fillText(dz.name, dz.x + dz.width / 2, dz.y - TITLE_HEIGHT / 2);
+        });
     }
 
+    // Draw cards
     function drawCards() {
-        for (const card of state.cards) {
-            // Draw card background
+        state.cards.forEach(card => {
             ctx.fillStyle = card.color || COLORS.CARD_DEFAULT;
             ctx.fillRect(card.x, card.y, card.width, card.height);
 
-            // Add border if selected
             if (card.selected) {
                 ctx.strokeStyle = COLORS.CARD_SELECTED_BORDER;
                 ctx.lineWidth = 2;
                 ctx.strokeRect(card.x, card.y, card.width, card.height);
             }
 
-            // Draw card title
-            ctx.fillStyle = "black"; // Text color
-            ctx.font = "14px Arial"; // Font size and style
-            ctx.textAlign = "center"; // Center the text horizontally
-            ctx.textBaseline = "middle"; // Center the text vertically
-            ctx.fillText(
-                card.title,
-                card.x + card.width / 2, // Center horizontally within the card
-                card.y + card.height / 2 // Center vertically within the card
-            );
-        }
+            ctx.fillStyle = "black";
+            ctx.font = "14px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(card.title, card.x + card.width / 2, card.y + card.height / 2);
+        });
     }
 
+    // Main draw function
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = COLORS.BACKGROUND;
@@ -138,156 +117,83 @@ export function canvasBoard(canvasid, canvascontainerid) {
         drawCards();
     }
 
-    // Draw the initial state
-    draw();
-
-    function getMousePos(evt) {
-        var rect = canvas.getBoundingClientRect();
-        return {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top,
-        };
-    }
-
-    let isover = false;
-    let isdown = false;
-    let needsRedraw = false;
-
-    canvas.addEventListener("mouseover", function (event) {
-        isover = true;
-    });
-
-    canvas.addEventListener("mouseleave", function (event) {
-        isover = false;
-        for (const dz of state.dzs) {
-            dz.over = false;
-        }
-        needsRedraw = true;
-    });
-
-    canvas.addEventListener("mousedown", function (event) {
-        isdown = true;
-        const canevent = getMousePos(event);
-
-        for (const card of state.cards) {
-            card.selected = false; // Deselect all cards
-        }
-
-        for (const card of state.cards) {
-            if (isPointInsideRectangle(canevent, card)) {
-                card.selected = true;
-                break; // Stop after selecting one card
-            }
-        }
-
-        needsRedraw = true;
-    });
-
-    canvas.addEventListener("mouseup", function (event) {
-        isdown = false;
-
-        for (const card of state.cards) {
-            if (card.selected) {
-                // Check if the card is inside any drop zone
-                for (let i = 0; i < state.dzs.length; i++) {
-                    const dz = state.dzs[i];
-                    if (isPointInsideRectangle({ x: card.x + card.width / 2, y: card.y + card.height / 2 }, dz)) {
-                        // Update the card's column
-                        if (card.column !== i) {
-                            card.column = i;
-
-                            // Assign the next available position in the new column
-                            const cardsInColumn = state.cards.filter(c => c.column === i);
-                            card.position = cardsInColumn.length;
-                        }
-                        updateCardSizes(); // Recalculate card positions
-                        break;
-                    }
-                }
-            }
-            card.selected = false;
-        }
-
-        for (const dz of state.dzs) {
-            dz.over = false;
-        }
-
-        needsRedraw = true;
-    });
-
-    canvas.addEventListener("mousemove", function (event) {
-        if (!isover) return;
-
+    // Handle mouse events
+    function handleMouseDown(event) {
+        isMouseDown = true;
         const mousePos = getMousePos(event);
 
-        // Update mouse position display
-        const x = document.getElementById("x");
-        const y = document.getElementById("y");
-        x.innerText = `(x:${mousePos.x})`;
-        y.innerText = `(y:${mousePos.y})`;
-
-        if (isdown) {
-            // Move selected card
-            for (const card of state.cards) {
-                if (card.selected) {
-                    // Clamp card position within canvas boundaries
-                    card.x = Math.max(0, Math.min(canvas.width - card.width, Math.floor(mousePos.x - card.width / 2)));
-                    card.y = Math.max(0, Math.min(canvas.height - card.height, Math.floor(mousePos.y - card.height / 2)));
-                    needsRedraw = true;
-                    break;
-                }
-            }
-
-            // Update drop zone hover state
-            for (const dz of state.dzs) {
-                const isOver = isPointInsideRectangle(mousePos, dz);
-                if (dz.over !== isOver) {
-                    dz.over = isOver;
-                    needsRedraw = true;
-                }
-            }
-        }
-    });
-
-    function resizeCanvas() {
-        const container = document.getElementById(canvascontainerid);
-        canvas.width = container.clientWidth;
-        canvas.height = container.clientHeight;
-
-        // Recalculate drop zone positions
-        positionDropZones(canvas.width, canvas.height);
-
-        // Recalculate card sizes
-        updateCardSizes();
-
-        draw(); // Redraw the canvas after resizing
+        state.cards.forEach(card => (card.selected = isPointInsideRectangle(mousePos, card)));
+        needsRedraw = true;
     }
 
-    // Set the initial size
-    resizeCanvas();
+    function handleMouseUp(event) {
+        isMouseDown = false;
 
-    // Update the canvas size on window resize
-    window.addEventListener("resize", resizeCanvas);
+        state.cards.forEach(card => {
+            if (card.selected) {
+                state.dzs.forEach((dz, i) => {
+                    if (isPointInsideRectangle({ x: card.x + card.width / 2, y: card.y + card.height / 2 }, dz)) {
+                        card.column = i;
+                        card.position = state.cards.filter(c => c.column === i).length;
+                    }
+                });
+                card.selected = false;
+            }
+        });
 
+        state.dzs.forEach(dz => (dz.over = false));
+        updateCardSizes();
+        needsRedraw = true;
+    }
+
+    function handleMouseMove(event) {
+        if (!isMouseDown) return;
+
+        const mousePos = getMousePos(event);
+        state.cards.forEach(card => {
+            if (card.selected) {
+                card.x = Math.max(0, Math.min(canvas.width - card.width, mousePos.x - card.width / 2));
+                card.y = Math.max(0, Math.min(canvas.height - card.height, mousePos.y - card.height / 2));
+                needsRedraw = true;
+            }
+        });
+
+        state.dzs.forEach(dz => {
+            dz.over = isPointInsideRectangle(mousePos, dz);
+        });
+    }
+
+    // Get mouse position relative to canvas
+    function getMousePos(event) {
+        const rect = canvas.getBoundingClientRect();
+        return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    }
+
+    // Animation loop
     function animationLoop() {
         if (needsRedraw) {
             draw();
-            needsRedraw = false; // Reset the flag after redrawing
+            needsRedraw = false;
         }
-        requestAnimationFrame(animationLoop); // Schedule the next frame
+        requestAnimationFrame(animationLoop);
     }
 
-    // Start the animation loop
+    // Initialize
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mouseup", handleMouseUp);
+    canvas.addEventListener("mousemove", handleMouseMove);
     animationLoop();
-    function setState(newState) {
-        state.cards = newState.cards;
-        state.dzs = newState.dzs;
-        positionDropZones(canvas.width, canvas.height);
-        updateCardSizes();
-        draw();
-    }
 
+    // Public API
     return {
-        setState,
+        setState(newState) {
+            state.cards = newState.cards;
+            state.dzs = newState.dzs;
+            positionDropZones();
+            updateCardSizes();
+            needsRedraw = true;
+        },
     };
 }
