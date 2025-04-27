@@ -1,12 +1,14 @@
 {
-    "CARD_DEFAULT": "#1E88E5", 
-    "CARD_SELECTED_BORDER": "#D32F2F", 
-    "DROPZONE_DEFAULT": "#37474F", 
-    "DROPZONE_HOVER": "#FFCA28", 
-    "BACKGROUND": "#263238", 
+    "CARD_DEFAULT": "#1E88E5",
+    "CARD_SELECTED_BORDER": "#D32F2F",
+    "DROPZONE_DEFAULT": "#37474F",
+    "DROPZONE_HOVER": "#FFCA28",
+    "BACKGROUND": "#263238",
     "CARD_TYPE_COLORS": {
-        "dev": "#00E676", 
-        "art": "#FF4081", 
-        "infra": "#7C4DFF" 
-    }
+        "dev": "#00E676",
+        "art": "#FF4081",
+        "infra": "#7C4DFF"
+    },
+    "CARD_TEXT_COLOR": "#FFFFFF", 
+    "DROPZONE_TEXT_COLOR": "#FFFFFF" 
 }

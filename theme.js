@@ -9,4 +9,6 @@ export const defaultTheme = {
         art: "#E91E63", // Pink for artists
         infra: "#9C27B0", // Purple for infrastructure
     },
+    CARD_TEXT_COLOR: "#FFFFFF", // White text for better contrast
+    DROPZONE_TEXT_COLOR: "#FFFFFF" // White text for drop zone headers
 };

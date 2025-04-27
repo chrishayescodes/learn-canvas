@@ -1,9 +1,11 @@
 export function drawDropZones(ctx, state, COLORS, TITLE_HEIGHT) {
     state.dzs.forEach(dz => {
+        // Draw the drop zone background
         ctx.fillStyle = dz.over ? COLORS.DROPZONE_HOVER : COLORS.DROPZONE_DEFAULT;
         ctx.fillRect(dz.x, dz.y, dz.width, dz.height);
 
-        ctx.fillStyle = "black";
+        // Draw the drop zone title with text color from the theme
+        ctx.fillStyle = COLORS.DROPZONE_TEXT_COLOR;
         ctx.font = "16px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -27,8 +29,8 @@ export function drawCards(ctx, state, COLORS) {
             ctx.strokeRect(card.x, card.y, card.width, card.height);
         }
 
-        // Draw the card title
-        ctx.fillStyle = "black";
+        // Draw the card title with text color from the theme
+        ctx.fillStyle = COLORS.CARD_TEXT_COLOR;
         ctx.font = "14px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
