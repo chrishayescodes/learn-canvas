@@ -87,10 +87,12 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
     resizeCanvas(canvas, canvascontainerid, () => positionDropZones(canvas, state, TITLE_HEIGHT), () =>
         updateCardSizes(canvas, state, TITLE_HEIGHT)
     );
-    window.addEventListener("resize", () =>
+    window.addEventListener("resize", () => {
         resizeCanvas(canvas, canvascontainerid, () => positionDropZones(canvas, state, TITLE_HEIGHT), () =>
             updateCardSizes(canvas, state, TITLE_HEIGHT)
-        )
+        );
+        needsRedraw = true;
+    }
     );
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mouseup", handleMouseUp);
