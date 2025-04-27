@@ -5,7 +5,7 @@ export function canvasBoard(canvasid, canvascontainerid) {
         CARD_DEFAULT: "green",
         CARD_SELECTED_BORDER: "blue",
         DROPZONE_DEFAULT: "silver",
-        DROPZONE_HOVER: "red",
+        DROPZONE_HOVER: "gray",
         BACKGROUND: "white",
     };
 
