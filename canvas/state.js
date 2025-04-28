@@ -3,6 +3,8 @@ export const state = {
     dzs: [],
 };
 
+const dzcards = {};
+
 export function resizeCanvas(canvas, containerId, positionDropZones, updateCardSizes) {
     const container = document.getElementById(containerId);
     canvas.width = container.clientWidth;
@@ -22,6 +24,8 @@ export function positionDropZones(canvas, state, TITLE_HEIGHT) {
         dz.y = TITLE_HEIGHT;
         dz.width = columnWidth - 10;
         dz.height = dropZoneHeight;
+        dzcards[dz.id] = {title: 'ghost', position:9999, type:'ghost', dzId: dz.id, isghost:true, hide:()=>!dz.over};
+        state.cards.push(dzcards[dz.id]);
     });
 }
 

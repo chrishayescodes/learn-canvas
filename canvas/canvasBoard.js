@@ -21,7 +21,7 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
         const mousePos = getMousePos(event, canvas);
 
         state.cards.forEach((card, index) => {
-            if (isPointInsideRectangle(mousePos, card)) {
+            if (!card.isghost && isPointInsideRectangle(mousePos, card)) {
                 card.selected = true;
                 state.selectedCard = card; // Store the selected card in the state
 

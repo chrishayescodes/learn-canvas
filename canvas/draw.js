@@ -1,19 +1,45 @@
-export function drawCard(ctx, card, COLORS) {
-    // Get the color based on the card type, fallback to CARD_DEFAULT
-    const cardColor = COLORS.CARD_TYPE_COLORS[card.type] || COLORS.CARD_DEFAULT;
-
-    // Draw the card background
-    ctx.fillStyle = cardColor;
-    ctx.fillRect(card.x, card.y, card.width, card.height);
-
-    // Draw the border if the card is selected
-    if (card.selected) {
-        ctx.strokeStyle = COLORS.CARD_SELECTED_BORDER;
-        ctx.lineWidth = 2;
-        ctx.strokeRect(card.x, card.y, card.width, card.height);
+export function drawCard(ctx, state, card, COLORS) {
+    if(card.isghost) {
+        const overdz = state.dzs.find(dz => dz.over);
+        const selectedCard = state.cards.find(c => c.selected);
+        const isOverSelectedCardDz =
+            selectedCard && overdz && overdz.id === selectedCard.dzId;
+        if(!isOverSelectedCardDz && !card.hide()) {drawGhostCard(ctx, card, COLORS);}
     }
+    else {
+        drawRegularCard(ctx, card, COLORS);
+    }
+}
 
-    // Draw the card title with text color from the theme
+function drawGhostCard(ctx, card, COLORS) {
+    ctx.strokeStyle = COLORS.CARD_SELECTED_BORDER;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 3]);
+    ctx.strokeRect(card.x, card.y, card.width, card.height);
+}
+
+function drawRegularCard(ctx, card, COLORS) {
+        // Get the color based on the card type, fallback to CARD_DEFAULT
+        const cardColor = COLORS.CARD_TYPE_COLORS[card.type] || COLORS.CARD_DEFAULT;
+
+        // Draw the card background
+        ctx.fillStyle = cardColor;
+        ctx.fillRect(card.x, card.y, card.width, card.height);
+    
+        // Draw the border if the card is selected
+        if (card.selected) { drawSelectedBoarder(ctx, card, COLORS); }
+    
+        // Draw the card title with text color from the theme
+        drawCardTitle(ctx, card, COLORS);    
+}
+
+function drawSelectedBoarder(ctx, card, COLORS) {
+    ctx.strokeStyle = COLORS.CARD_SELECTED_BORDER;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(card.x, card.y, card.width, card.height);
+}
+
+function drawCardTitle(ctx, card, COLORS) {
     ctx.fillStyle = COLORS.CARD_TEXT_COLOR;
     ctx.font = "14px Arial";
     ctx.textAlign = "center";
@@ -38,7 +64,7 @@ export function drawDropZones(ctx, state, COLORS, TITLE_HEIGHT) {
 
 export function drawCards(ctx, state, COLORS) {
     state.cards.forEach(card => {
-        drawCard(ctx, card, COLORS); // Use the new drawCard function
+        drawCard(ctx, state, card, COLORS); // Use the new drawCard function
     });
 }
 
