@@ -45,15 +45,15 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
             state.dzs.forEach((dz, i) => {
                 if (isPointInsideRectangle({ x: state.selectedCard.x + state.selectedCard.width / 2, y: state.selectedCard.y + state.selectedCard.height / 2 }, dz)) {
                     droppedInZone = true;
-                    if (state.selectedCard.column !== i) {
-                        state.selectedCard.column = i;
-                        state.selectedCard.position = state.cards.filter(c => c.column === i).length;
+                    if (state.selectedCard.dzId !== dz.id) {
+                        state.selectedCard.dzId = dz.id;
+                        state.selectedCard.position = state.cards.filter(c => c.dzId === dz.id).length;
                     }
                 }
             });
 
             if (!droppedInZone) {
-                const dz = state.dzs[state.selectedCard.column];
+                const dz = state.dzs.find(dz => dz.id === state.selectedCard.dzId);
                 state.selectedCard.x = dz.x + (dz.width - state.selectedCard.width) / 2;
                 state.selectedCard.y = dz.y + (dz.height - state.selectedCard.height) / 2;
             }
@@ -93,7 +93,7 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
 
             // Draw a dashed outline at the original position of the selected card
             if (state.selectedCard) {
-                const originalDropZone = state.dzs[state.selectedCard.column];
+                const originalDropZone = state.dzs.find(dz => dz.id === state.selectedCard.dzId);
                 const isOverOriginalDropZone = isPointInsideRectangle(
                     { x: state.selectedCard.x + state.selectedCard.width / 2, y: state.selectedCard.y + state.selectedCard.height / 2 },
                     originalDropZone

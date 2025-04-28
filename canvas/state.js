@@ -34,19 +34,31 @@ export function updateCardSizes(canvas, state, TITLE_HEIGHT) {
         height: ((height - TITLE_HEIGHT) / (cardsPerRow * 2)) * 0.8,
     };
 
-    const cardsByColumn = Array.from({ length: columns }, () => []);
-    state.cards.forEach(card => cardsByColumn[card.column].push(card));
+    // Group cards by their dzId
+    const cardsByDzId = state.dzs.reduce((acc, dz) => {
+        acc[dz.id] = [];
+        return acc;
+    }, {});
 
-    cardsByColumn.forEach((columnCards, columnIndex) => {
+    state.cards.forEach(card => {
+        if (cardsByDzId[card.dzId]) {
+            cardsByDzId[card.dzId].push(card);
+        }
+    });
+
+    // Position cards within their respective drop zones
+    state.dzs.forEach((dz, columnIndex) => {
+        const columnCards = cardsByDzId[dz.id];
         columnCards.sort((a, b) => a.position - b.position);
+
         columnCards.forEach((card, cardIndex) => {
             const rowIndex = Math.floor(cardIndex / cardsPerRow);
             const colIndex = cardIndex % cardsPerRow;
 
             card.width = cardSize.width;
             card.height = cardSize.height;
-            card.x = columnIndex * (width / columns) + colIndex * (card.width + 10);
-            card.y = TITLE_HEIGHT + rowIndex * (card.height + 10);
+            card.x = dz.x + colIndex * (card.width + 10);
+            card.y = dz.y + rowIndex * (card.height + 10);
         });
     });
 }
