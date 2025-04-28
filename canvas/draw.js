@@ -1,3 +1,26 @@
+export function drawCard(ctx, card, COLORS) {
+    // Get the color based on the card type, fallback to CARD_DEFAULT
+    const cardColor = COLORS.CARD_TYPE_COLORS[card.type] || COLORS.CARD_DEFAULT;
+
+    // Draw the card background
+    ctx.fillStyle = cardColor;
+    ctx.fillRect(card.x, card.y, card.width, card.height);
+
+    // Draw the border if the card is selected
+    if (card.selected) {
+        ctx.strokeStyle = COLORS.CARD_SELECTED_BORDER;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(card.x, card.y, card.width, card.height);
+    }
+
+    // Draw the card title with text color from the theme
+    ctx.fillStyle = COLORS.CARD_TEXT_COLOR;
+    ctx.font = "14px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(card.title, card.x + card.width / 2, card.y + card.height / 2);
+}
+
 export function drawDropZones(ctx, state, COLORS, TITLE_HEIGHT) {
     state.dzs.forEach(dz => {
         // Draw the drop zone background
@@ -15,26 +38,7 @@ export function drawDropZones(ctx, state, COLORS, TITLE_HEIGHT) {
 
 export function drawCards(ctx, state, COLORS) {
     state.cards.forEach(card => {
-        // Get the color based on the card type, fallback to CARD_DEFAULT
-        const cardColor = COLORS.CARD_TYPE_COLORS[card.type] || COLORS.CARD_DEFAULT;
-
-        // Draw the card background
-        ctx.fillStyle = cardColor;
-        ctx.fillRect(card.x, card.y, card.width, card.height);
-
-        // Draw the border if the card is selected
-        if (card.selected) {
-            ctx.strokeStyle = COLORS.CARD_SELECTED_BORDER;
-            ctx.lineWidth = 2;
-            ctx.strokeRect(card.x, card.y, card.width, card.height);
-        }
-
-        // Draw the card title with text color from the theme
-        ctx.fillStyle = COLORS.CARD_TEXT_COLOR;
-        ctx.font = "14px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(card.title, card.x + card.width / 2, card.y + card.height / 2);
+        drawCard(ctx, card, COLORS); // Use the new drawCard function
     });
 }
 
