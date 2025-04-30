@@ -1,16 +1,3 @@
-export function drawCard(ctx, state, card, COLORS) {
-    if(card.isghost) {
-        const overdz = state.dzs.find(dz => dz.over);
-        const selectedCard = state.cards.find(c => c.selected);
-        const isOverSelectedCardDz =
-            selectedCard && overdz && overdz.id === selectedCard.dzId;
-        if(!isOverSelectedCardDz && !card.hide()) {drawGhostCard(ctx, card, COLORS);}
-    }
-    else {
-        drawRegularCard(ctx, card, COLORS);
-    }
-}
-
 function drawGhostCard(ctx, card, COLORS) {
     ctx.strokeStyle = COLORS.CARD_SELECTED_BORDER;
     ctx.lineWidth = 2;
@@ -47,7 +34,20 @@ function drawCardTitle(ctx, card, COLORS) {
     ctx.fillText(card.title, card.x + card.width / 2, card.y + card.height / 2);
 }
 
-export function drawDropZones(ctx, state, COLORS, TITLE_HEIGHT) {
+function drawCard(ctx, state, card, COLORS) {
+    if(card.isghost) {
+        const overdz = state.dzs.find(dz => dz.over);
+        const selectedCard = state.cards.find(c => c.selected);
+        const isOverSelectedCardDz =
+            selectedCard && overdz && overdz.id === selectedCard.dzId;
+        if(!isOverSelectedCardDz && !card.hide()) {drawGhostCard(ctx, card, COLORS);}
+    }
+    else {
+        drawRegularCard(ctx, card, COLORS);
+    }
+}
+
+function drawDropZones(ctx, state, COLORS, TITLE_HEIGHT) {
     state.dzs.forEach(dz => {
         // Draw the drop zone background
         ctx.fillStyle = dz.over ? COLORS.DROPZONE_HOVER : COLORS.DROPZONE_DEFAULT;
@@ -62,13 +62,13 @@ export function drawDropZones(ctx, state, COLORS, TITLE_HEIGHT) {
     });
 }
 
-export function drawCards(ctx, state, COLORS) {
+function drawCards(ctx, state, COLORS) {
     state.cards.forEach(card => {
         drawCard(ctx, state, card, COLORS); // Use the new drawCard function
     });
 }
 
-export function draw(ctx, canvas, state, COLORS, TITLE_HEIGHT) {
+function draw(ctx, canvas, state, COLORS, TITLE_HEIGHT) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = COLORS.BACKGROUND;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -76,3 +76,5 @@ export function draw(ctx, canvas, state, COLORS, TITLE_HEIGHT) {
     drawDropZones(ctx, state, COLORS, TITLE_HEIGHT);
     drawCards(ctx, state, COLORS);
 }
+
+export { drawCard, drawDropZones, drawCards, draw };

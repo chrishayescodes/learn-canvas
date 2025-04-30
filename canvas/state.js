@@ -3,18 +3,16 @@ export const state = {
     dzs: [],
 };
 
-const dzcards = {};
-
-export function resizeCanvas(canvas, containerId, positionDropZones, updateCardSizes) {
+export function resizeCanvas(canvas, containerId) {
     const container = document.getElementById(containerId);
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
 
-    positionDropZones();
-    updateCardSizes();
+    positionDropZones(canvas, 30); // Assuming TITLE_HEIGHT is 30
+    updateCardSizes(canvas, 30); // Assuming TITLE_HEIGHT is 30
 }
 
-export function positionDropZones(canvas, state, TITLE_HEIGHT) {
+function positionDropZones(canvas, TITLE_HEIGHT) {
     const { width, height } = canvas;
     const columnWidth = width / state.dzs.length;
     const dropZoneHeight = height - TITLE_HEIGHT - 20;
@@ -24,12 +22,12 @@ export function positionDropZones(canvas, state, TITLE_HEIGHT) {
         dz.y = TITLE_HEIGHT;
         dz.width = columnWidth - 10;
         dz.height = dropZoneHeight;
-        dzcards[dz.id] = {title: 'ghost', position:9999, type:'ghost', dzId: dz.id, isghost:true, hide:()=>!dz.over};
-        state.cards.push(dzcards[dz.id]);
+        // dzcards[dz.id] = {title: 'ghost', position:9999, type:'ghost', dzId: dz.id, isghost:true, hide:()=>!dz.over};
+        // state.cards.push(dzcards[dz.id]);
     });
 }
 
-export function updateCardSizes(canvas, state, TITLE_HEIGHT) {
+function updateCardSizes(canvas, TITLE_HEIGHT) {
     const { width, height } = canvas;
     const columns = state.dzs.length;
     const cardsPerRow = 3;
@@ -40,15 +38,9 @@ export function updateCardSizes(canvas, state, TITLE_HEIGHT) {
 
     // Group cards by their dzId
     const cardsByDzId = state.dzs.reduce((acc, dz) => {
-        acc[dz.id] = [];
+        acc[dz.id] = [...state.cards.filter(card => card.dzId === dz.id)];
         return acc;
     }, {});
-
-    state.cards.forEach(card => {
-        if (cardsByDzId[card.dzId]) {
-            cardsByDzId[card.dzId].push(card);
-        }
-    });
 
     // Position cards within their respective drop zones
     state.dzs.forEach((dz, columnIndex) => {
@@ -56,13 +48,17 @@ export function updateCardSizes(canvas, state, TITLE_HEIGHT) {
         columnCards.sort((a, b) => a.position - b.position);
 
         columnCards.forEach((card, cardIndex) => {
-            const rowIndex = Math.floor(cardIndex / cardsPerRow);
-            const colIndex = cardIndex % cardsPerRow;
-
-            card.width = cardSize.width;
-            card.height = cardSize.height;
-            card.x = dz.x + colIndex * (card.width + 10);
-            card.y = dz.y + rowIndex * (card.height + 10);
+            positionCard(cardIndex, cardsPerRow, card, cardSize, dz);
         });
     });
+}
+
+function positionCard(cardIndex, cardsPerRow, card, cardSize, dz) {
+    const rowIndex = Math.floor(cardIndex / cardsPerRow);
+    const colIndex = cardIndex % cardsPerRow;
+
+    card.width = cardSize.width;
+    card.height = cardSize.height;
+    card.x = dz.x + colIndex * (card.width + 10);
+    card.y = dz.y + rowIndex * (card.height + 10);
 }

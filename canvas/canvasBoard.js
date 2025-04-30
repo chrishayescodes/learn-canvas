@@ -1,6 +1,6 @@
 import { isPointInsideRectangle, getMousePos } from "./utils.js";
 import { draw } from "./draw.js";
-import { state, resizeCanvas, positionDropZones, updateCardSizes } from "./state.js";
+import { state, resizeCanvas } from "./state.js";
 import { defaultTheme } from "./theme.js";
 
 export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
@@ -63,7 +63,7 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
         }
 
         state.dzs.forEach(dz => (dz.over = false));
-        updateCardSizes(canvas, state, TITLE_HEIGHT);
+        resizeCanvas(canvas, canvascontainerid);
         needsRedraw = true;
     }
 
@@ -119,9 +119,7 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
     }
 
     function resize() {
-        resizeCanvas(canvas, canvascontainerid, () => positionDropZones(canvas, state, TITLE_HEIGHT), () =>
-            updateCardSizes(canvas, state, TITLE_HEIGHT)
-        );
+        resizeCanvas(canvas, canvascontainerid);
         needsRedraw = true;
     }
     resize();
@@ -135,8 +133,7 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
         setState(newState) {
             state.cards = newState.cards;
             state.dzs = newState.dzs;
-            positionDropZones(canvas, state, TITLE_HEIGHT);
-            updateCardSizes(canvas, state, TITLE_HEIGHT);
+            resizeCanvas(canvas, canvascontainerid);
             needsRedraw = true;
         },
         setTheme(newTheme) {
