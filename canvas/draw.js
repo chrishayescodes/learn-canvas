@@ -1,23 +1,29 @@
 function drawGhostCard(ctx, card, COLORS) {
-    ctx.strokeStyle = COLORS.CARD_SELECTED_BORDER;
+    ctx.strokeStyle = COLORS.CARD_SELECTED_BORDER; // Use the selected border color
     ctx.lineWidth = 2;
-    ctx.setLineDash([5, 3]);
-    ctx.strokeRect(card.x, card.y, card.width, card.height);
+    ctx.setLineDash([5, 5]); // Dashed outline
+    ctx.strokeRect(
+        card.originalX,
+        card.originalY,
+        card.width,
+        card.height
+    );
+    ctx.setLineDash([]); // Reset line dash
 }
 
 function drawRegularCard(ctx, card, COLORS) {
-        // Get the color based on the card type, fallback to CARD_DEFAULT
-        const cardColor = COLORS.CARD_TYPE_COLORS[card.type] || COLORS.CARD_DEFAULT;
+    // Get the color based on the card type, fallback to CARD_DEFAULT
+    const cardColor = COLORS.CARD_TYPE_COLORS[card.type] || COLORS.CARD_DEFAULT;
 
-        // Draw the card background
-        ctx.fillStyle = cardColor;
-        ctx.fillRect(card.x, card.y, card.width, card.height);
-    
-        // Draw the border if the card is selected
-        if (card.selected) { drawSelectedBoarder(ctx, card, COLORS); }
-    
-        // Draw the card title with text color from the theme
-        drawCardTitle(ctx, card, COLORS);    
+    // Draw the card background
+    ctx.fillStyle = cardColor;
+    ctx.fillRect(card.x, card.y, card.width, card.height);
+
+    // Draw the border if the card is selected
+    if (card.selected) { drawSelectedBoarder(ctx, card, COLORS); }
+
+    // Draw the card title with text color from the theme
+    drawCardTitle(ctx, card, COLORS);
 }
 
 function drawSelectedBoarder(ctx, card, COLORS) {
@@ -35,12 +41,12 @@ function drawCardTitle(ctx, card, COLORS) {
 }
 
 function drawCard(ctx, state, card, COLORS) {
-    if(card.isghost) {
+    if (card.isghost) {
         const overdz = state.dzs.find(dz => dz.over);
         const selectedCard = state.cards.find(c => c.selected);
         const isOverSelectedCardDz =
             selectedCard && overdz && overdz.id === selectedCard.dzId;
-        if(!isOverSelectedCardDz && !card.hide()) {drawGhostCard(ctx, card, COLORS);}
+        if (!isOverSelectedCardDz && !card.hide()) { drawGhostCard(ctx, card, COLORS); }
     }
     else {
         drawRegularCard(ctx, card, COLORS);
@@ -74,6 +80,9 @@ function draw(ctx, canvas, state, COLORS, TITLE_HEIGHT) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawDropZones(ctx, state, COLORS, TITLE_HEIGHT);
+    if (state.isOverOriginalDropZone && state.selectedCard) {
+        drawGhostCard(ctx, state.selectedCard, COLORS);
+    }
     drawCards(ctx, state, COLORS);
 }
 

@@ -1,10 +1,13 @@
+import { isPointInsideRectangle } from './utils.js';
+
 export const state = {
     cards: [],
     dzs: [],
+    selectedCard: null,
+    isOverOriginalDropZone: false,
 };
 
-export function resizeCanvas(canvas, containerId) {
-    const container = document.getElementById(containerId);
+export function resizeCanvas(canvas, container) {
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
 
@@ -61,4 +64,76 @@ function positionCard(cardIndex, cardsPerRow, card, cardSize, dz) {
     card.height = cardSize.height;
     card.x = dz.x + colIndex * (card.width + 10);
     card.y = dz.y + rowIndex * (card.height + 10);
+}
+
+function setSelectedCard(card) {
+    card.selected = true;
+    state.selectedCard = card; // Store the selected card in the state
+
+    // Record the original coordinates of the selected card
+    state.selectedCard.originalX = card.x;
+    state.selectedCard.originalY = card.y;
+
+    // Move the selected card to the end for z-index
+    const cardIndex = state.cards.indexOf(card);
+    state.cards.splice(cardIndex, 1);
+    state.cards.push(card);
+}
+
+export function setCardSelectedIfOver(mousePos) {
+
+    // Find the first card that the mouse is over
+    const card = state.cards.find(card => !card.isghost && isPointInsideRectangle(mousePos, card));
+
+    if (card) {
+        console.log('Card selected:', card);
+        setSelectedCard(card);
+    }
+}
+
+export function dropCard() {
+    if (state.selectedCard) {
+        let droppedInZone = false;
+
+        state.dzs.forEach((dz, i) => {
+            if (isPointInsideRectangle({ x: state.selectedCard.x + state.selectedCard.width / 2, y: state.selectedCard.y + state.selectedCard.height / 2 }, dz)) {
+                droppedInZone = true;
+                if (state.selectedCard.dzId !== dz.id) {
+                    state.selectedCard.dzId = dz.id;
+                    state.selectedCard.position = state.cards.filter(c => c.dzId === dz.id).length;
+                }
+            }
+        });
+
+        if (!droppedInZone) {
+            const dz = state.dzs.find(dz => dz.id === state.selectedCard.dzId);
+            state.selectedCard.x = dz.x + (dz.width - state.selectedCard.width) / 2;
+            state.selectedCard.y = dz.y + (dz.height - state.selectedCard.height) / 2;
+        }
+
+        state.selectedCard.selected = false;
+        state.selectedCard = null; // Clear the selected card
+    }
+
+    state.dzs.forEach(dz => (dz.over = false));
+}
+
+export function setMouseMove(mousePos, canvasWidth, canvasHeight) {
+    state.selectedCard.x = Math.max(0, Math.min(canvasWidth - state.selectedCard.width, mousePos.x - state.selectedCard.width / 2));
+    state.selectedCard.y = Math.max(0, Math.min(canvasHeight - state.selectedCard.height, mousePos.y - state.selectedCard.height / 2));
+
+    // Mark drop zones as hovered if applicable
+    state.dzs.forEach(dz => {
+        dz.over = isPointInsideRectangle(mousePos, dz);
+    });
+}
+
+export function setOverOriginalDropZone() {
+    if (state.selectedCard) {
+        const originalDropZone = state.dzs.find(dz => dz.id === state.selectedCard.dzId);
+        state.isOverOriginalDropZone = isPointInsideRectangle(
+            { x: state.selectedCard.x + state.selectedCard.width / 2, y: state.selectedCard.y + state.selectedCard.height / 2 },
+            originalDropZone
+        );
+    }
 }
