@@ -1,5 +1,5 @@
 import { getCanvasMousePos } from "./utils.js";
-import { draw } from "./draw.js";
+import { getDrawHandler } from "./draw.js";
 import { getStateHandler } from "./state.js";
 import { defaultTheme } from "./theme.js";
 
@@ -13,6 +13,7 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
     const ctx = canvas.getContext("2d");
 
     const { state, resizeCanvas, positionDropZones, updateCardSizes, setMouseMove, setOverOriginalDropZone, dropCard, setCardSelectedIfOver } = getStateHandler();
+    const { draw } = getDrawHandler(canvas, ctx, COLORS, TITLE_HEIGHT);
 
     let isMouseDown = false;
     let needsRedraw = false;
@@ -45,7 +46,7 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
             setOverOriginalDropZone();
 
             // Redraw the entire board
-            draw(ctx, canvas, state, COLORS, TITLE_HEIGHT);
+            draw(state);
 
             needsRedraw = false;
         }
