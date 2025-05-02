@@ -1,10 +1,10 @@
 import { getCanvasMousePos } from "./utils.js";
 import { draw } from "./draw.js";
-import { state, resizeCanvas, setCardSelectedIfOver, dropCard, setMouseMove, setOverOriginalDropZone } from "./state.js";
+import { getStateHandler } from "./state.js";
 import { defaultTheme } from "./theme.js";
 
 export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
-    
+
     const COLORS = { ...defaultTheme, ...theme }; // Merge default theme with custom theme
 
     const TITLE_HEIGHT = 30;
@@ -12,12 +12,11 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
     const canvas = document.getElementById(canvasid);
     const ctx = canvas.getContext("2d");
 
+    const { state, resizeCanvas, positionDropZones, updateCardSizes, setMouseMove, setOverOriginalDropZone, dropCard, setCardSelectedIfOver } = getStateHandler();
+
     let isMouseDown = false;
     let needsRedraw = false;
 
-    // Add a selectedCard property to the state
-
-    
     function handleMouseDown(event) {
         isMouseDown = true;
         const mousePos = getCanvasMousePos(event, canvas);
@@ -27,13 +26,13 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
     function handleMouseUp(event) {
         isMouseDown = false;
         dropCard();
-        
+
         resizeCanvas(canvas, container);
         needsRedraw = true;
     }
 
     function handleMouseMove(event) {
-        if (!isMouseDown || !state.selectedCard) return;
+        if (!isMouseDown) return;
 
         const mousePos = getCanvasMousePos(event, canvas);
         setMouseMove(mousePos, canvas.width, canvas.height);
@@ -42,9 +41,6 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
 
     function animationLoop() {
         if (needsRedraw) {
-            // Clear the canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             // Draw a dashed outline at the original position of the selected card
             setOverOriginalDropZone();
 
@@ -68,16 +64,20 @@ export function canvasBoard(canvasid, canvascontainerid, theme = defaultTheme) {
     canvas.addEventListener("mousemove", handleMouseMove);
     animationLoop();
 
+
+    function setState(newState) {
+        state.cards = newState.cards;
+        state.dzs = newState.dzs;
+        resizeCanvas(canvas, container);
+        needsRedraw = true;
+    }
+
+    function setTheme(newTheme) {
+        Object.assign(COLORS, newTheme); // Update the theme dynamically
+        needsRedraw = true;
+    }
+
     return {
-        setState(newState) {
-            state.cards = newState.cards;
-            state.dzs = newState.dzs;
-            resizeCanvas(canvas, container);
-            needsRedraw = true;
-        },
-        setTheme(newTheme) {
-            Object.assign(COLORS, newTheme); // Update the theme dynamically
-            needsRedraw = true;
-        },
+        setState, setTheme,
     };
 }
